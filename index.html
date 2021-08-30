@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Визуализация сети</title>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type='text/javascript'>
+        google.load('visualization', '1', { packages: ['orgchart'] });
+        google.setOnLoadCallback(drawChart);
+        function drawChart() {
+            $.ajax({
+                type: "POST",
+                url: "network.php",
+                success: function(result){
+                    var result = JSON.parse(result);
+                    if ((pc_id_count = result.length) > 0) {
+
+                        //console.log(result);
+                        var data = new google.visualization.DataTable();
+                        data.addColumn('string', 'PC');
+                        data.addColumn('string', 'Domain');
+                        data.addColumn('string', 'ToolTip');
+                        data.addRows(pc_id_count);
+
+                        for (i = 0; i < pc_id_count; i++) {
+                            data.setCell(i, 0, result[i].pc_id);
+                            data.setCell(i, 1, result[i].domain_name);
+                            data.setCell(i, 2, 'ID: ' + result[i].pc_id + '\n' + 'Архитектура: ' + result[i].net_architect + '\n' + 'ОС: ' + result[i].os_version + '\n' + 'PC-роль: ' + result[i].pc_role + '\n' + 'User_Name: '
+                                + result[i].user_name + '\n' + 'PC_Name: ' + result[i].pc_name + '\n' + 'ОЗУ: ' + result[i].ram + '\n' + 'Процессор: ' + result[i].proc + '\n' + 'Язык ОС: ' + result[i].os_language + '\n' +
+                                'Запущенные процессы: ' + result[i].proccesses_list + '\n' + 'Запущенные службы: ' + result[i].servicies_list + '\n' + 'Диски: ' + result[i].disks + '\n' + 'Топология сети: '
+                                + result[i].net_topology + '\n' + 'Список бинарных файлов: ' + result[i].bin_list);
+                        }
+
+                        var chart = new google.visualization.OrgChart(document.getElementById('chart_div'));
+                        chart.draw(data, { allowHtml: true });
+                    }
+
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div id="chart_div"></div>
+</body>
+</html>
